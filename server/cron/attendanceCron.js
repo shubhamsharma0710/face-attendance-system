@@ -1,6 +1,6 @@
 const cron = require("node-cron");
 const axios = require("axios");
-
+import { API } from "../../client/src/config";
 console.log(
   "Attendance Cron Started"
 );
@@ -12,7 +12,7 @@ cron.schedule(
   async () => {
     try {
       await axios.post(
-        "http://localhost:5000/api/attendance/auto-absent"
+        `${API}/api/attendance/auto-absent`
       );
 
       console.log(

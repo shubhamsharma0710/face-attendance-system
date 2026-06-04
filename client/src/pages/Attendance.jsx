@@ -199,7 +199,7 @@ export default function Attendance() {
 
       const response =
         await axios.post(
-          "http://localhost:5000/api/attendance/mark",
+          `${API}/api/attendance/mark`,
           attendanceData
         );
 

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { API } from "../config";
 
 export default function CreateCompany() {
   const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ export default function CreateCompany() {
       setLoading(true);
 
       const response = await axios.post(
-        "http://localhost:5000/api/company/create",
+        "${API}/api/company/create",
         formData
       );
 

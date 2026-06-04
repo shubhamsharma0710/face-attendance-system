@@ -1,7 +1,7 @@
 import React, {
 useState,
 } from "react";
-
+import { API } from "../config";
 import axios from "axios";
 
 export default function SuperAdminLogin({
@@ -18,7 +18,7 @@ async () => {
 try {
 const response =
 await axios.post(
-"http://localhost:5000/api/superadmin/login",
+`${API}/api/superadmin/login`,
 {
 username,
 password,

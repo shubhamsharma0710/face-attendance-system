@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-
+import { API } from "../config";
 export default function Login({
   onLogin,
 }) {
@@ -20,7 +20,7 @@ export default function Login({
 
         const response =
           await axios.post(
-            "http://localhost:5000/api/company/login",
+            `${API}/api/company/login`,
             {
               email,
               password,

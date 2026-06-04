@@ -3,7 +3,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-
+import { API } from "../config";
 import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
 import axios from "axios";
@@ -157,7 +157,7 @@ export default function Register() {
 
         const response =
           await axios.post(
-            "http://localhost:5000/api/employees/register",
+            "${API}/api/employees/register",
             employee
           );
 

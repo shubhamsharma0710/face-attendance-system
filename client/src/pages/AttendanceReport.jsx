@@ -30,7 +30,7 @@ if (!confirmDelete) return;
 
 try {
   await axios.delete(
-    `http://localhost:5000/api/attendance/delete/${id}`
+    `${API}/api/attendance/delete/${id}`
   );
 
   fetchAttendance();

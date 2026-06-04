@@ -39,7 +39,7 @@ window.confirm(
 
   try {
     await axios.delete(
-      `http://localhost:5000/api/superadmin/company/${id}`
+      `${API}/api/superadmin/company/${id}`
     );
 
     alert(
@@ -57,7 +57,7 @@ const disableCompany =
 async (id) => {
 try {
 await axios.put(
-`http://localhost:5000/api/superadmin/disable/${id}`
+`${API}/api/superadmin/disable/${id}`
 );
 
 
@@ -76,7 +76,7 @@ const enableCompany =
 async (id) => {
 try {
 await axios.put(
-`http://localhost:5000/api/superadmin/enable/${id}`
+`${API}/api/superadmin/enable/${id}`
 );
 
 
@@ -104,7 +104,7 @@ prompt(
       return;
 
     await axios.put(
-      `http://localhost:5000/api/superadmin/renew/${id}`,
+      `${API}/api/superadmin/renew/${id}`,
       {
         expiryDate:
           newDate,
