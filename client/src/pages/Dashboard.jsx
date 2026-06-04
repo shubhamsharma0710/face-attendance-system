@@ -4,6 +4,8 @@ useState,
 } from "react";
 
 import axios from "axios";
+import { API } from "../config";
+import { API } from "../config";
 
 export default function Dashboard() {
 const company = JSON.parse(
@@ -42,14 +44,14 @@ const fetchDashboardData =
 async () => {
 try {
 const employeeRes =
-await axios.get(
-`http://localhost:5000/api/employees/all/${company._id}`
-);
 
+await axios.get(
+  `${API}/api/employees/all`
+);
 
     const attendanceRes =
       await axios.get(
-        `http://localhost:5000/api/attendance/company/${company._id}`
+  `${API}/api/attendance/company/${company._id}`
       );
 
     const employees =

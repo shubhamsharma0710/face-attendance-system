@@ -4,6 +4,7 @@ useState,
 } from "react";
 
 import axios from "axios";
+import { API } from "../config";
 
 export default function Companies() {
 const [companies, setCompanies] =
@@ -13,26 +14,20 @@ useEffect(() => {
 fetchCompanies();
 }, []);
 
-const fetchCompanies =
-async () => {
-try {
-const response =
-await axios.get(
-"http://localhost:5000/api/superadmin/companies"
-);
-
-
-    setCompanies(
-      response.data
+const fetchCompanies = async () => {
+  try {
+    const response = await axios.get(
+      `${API}/api/employees/all`
     );
+
+    setCompanies(response.data);
   } catch (error) {
     console.error(error);
   }
 };
 
 
-const deleteCompany =
-async (id) => {
+const deleteCompany = async (id) => {
 const confirmDelete =
 window.confirm(
 "Delete Company?"

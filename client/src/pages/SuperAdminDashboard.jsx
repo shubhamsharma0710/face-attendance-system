@@ -2,6 +2,7 @@ import React, {
 useEffect,
 useState,
 } from "react";
+import { API } from "../config"
 
 import axios from "axios";
 
@@ -26,7 +27,7 @@ async () => {
 try {
 const response =
 await axios.get(
-"http://localhost:5000/api/superadmin/dashboard"
+  `${API}/api/config/superadmin/dashboard`
 );
 
 

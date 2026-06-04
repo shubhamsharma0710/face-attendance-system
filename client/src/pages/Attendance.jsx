@@ -7,6 +7,7 @@ import React, {
 import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
 import axios from "axios";
+import { API } from "../config";
 
 export default function Attendance() {
   const webcamRef = useRef(null);
@@ -51,7 +52,7 @@ export default function Attendance() {
     try {
       const employeeRes =
         await axios.get(
-          "http://localhost:5000/api/employees/all"
+          `${API}/api/employees/all`
         );
 
       const employees =

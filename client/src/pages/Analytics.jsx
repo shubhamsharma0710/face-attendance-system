@@ -4,6 +4,7 @@ import React, {
 } from "react";
 
 import axios from "axios";
+import { API } from "../config";
 
 export default function Analytics() {
   const [attendance, setAttendance] =
@@ -19,20 +20,16 @@ export default function Analytics() {
   const loadData = async () => {
     try {
       const company = JSON.parse(
-  localStorage.getItem(
-    "company"
-  )
-);
+        localStorage.getItem("company")
+      );
 
-const attendanceRes =
-  await axios.get(
-    `http://localhost:5000/api/attendance/company/${company._id}`
-  );
+      const attendanceRes = await axios.get(
+        `${API}/api/attendance/all/${company._id}`
+      );
 
-const employeeRes =
-  await axios.get(
-    `http://localhost:5000/api/employees/all/${company._id}`
-  );
+      const employeeRes = await axios.get(
+        `${API}/api/employees/all/${company._id}`
+      );
 
       setAttendance(
         attendanceRes.data

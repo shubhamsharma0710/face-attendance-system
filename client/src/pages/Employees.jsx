@@ -2,8 +2,8 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { API } from "../config";
 import axios from "axios";
-
 export default function Employees() {
   const [employees, setEmployees] =
     useState([]);
@@ -23,8 +23,10 @@ export default function Employees() {
     );
 
     const response =
-      await axios.get(
-        `http://localhost:5000/api/employees/all/${company._id}`
+      
+
+await axios.get(
+  `${API}/api/employees/all/${company._id}`
       );
 
     setEmployees(response.data);
@@ -41,7 +43,7 @@ export default function Employees() {
         );
 
         const response = await axios.get(
-          `http://localhost:5000/api/employees/deleted/list/${company._id}`
+          `${API}/api/employees/deleted/list/${company._id}`
         );
 
         setDeletedEmployees(
@@ -63,7 +65,7 @@ export default function Employees() {
 
       try {
         await axios.delete(
-          `http://localhost:5000/api/employees/delete/${id}`
+          `${API}/api/employees/delete/${id}`
         );
 
         alert(
@@ -81,7 +83,7 @@ export default function Employees() {
     async (id) => {
       try {
         await axios.put(
-          `http://localhost:5000/api/employees/restore/${id}`
+          `${API}/api/employees/restore/${id}`
         );
 
         alert(
@@ -106,7 +108,7 @@ export default function Employees() {
 
       try {
         await axios.delete(
-          `http://localhost:5000/api/employees/permanent/${id}`
+          `${API}/api/employees/permanent/${id}`
         );
 
         alert(

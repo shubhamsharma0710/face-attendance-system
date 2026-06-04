@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API } from "../config";
 
 export default function AttendanceReport() {
 const [attendance, setAttendance] = useState([]);
@@ -11,7 +12,7 @@ fetchAttendance();
 const fetchAttendance = async () => {
 try {
 const response = await axios.get(
-"http://localhost:5000/api/attendance/all"
+  `${API}/api/employees/all`
 );
 setAttendance(response.data);
 } catch (error) {

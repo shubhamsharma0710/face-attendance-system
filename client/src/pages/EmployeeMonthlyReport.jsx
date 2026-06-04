@@ -2,7 +2,7 @@ import React, {
 useEffect,
 useState,
 } from "react";
-
+import { API } from "../config";
 import axios from "axios";
 import jsPDF from "jspdf";
 
@@ -40,8 +40,10 @@ const fetchEmployees =
 async () => {
 try {
 const response =
+
+
 await axios.get(
-`http://localhost:5000/api/employees/all/${company._id}`
+  `${API}/api/employees/all/${company._id}`
 );
 
 
@@ -76,7 +78,7 @@ employeeMongoId
 try {
 const response =
 await axios.get(
-`http://localhost:5000/api/attendance/employee-summary/${employeeMongoId}/${month}/${year}`
+  `${API}/api/attendance/employee-summary/${employeeMongoId}/${month}/${year}`
 );
 
 
