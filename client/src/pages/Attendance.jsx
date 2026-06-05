@@ -7,7 +7,7 @@ import React, {
 import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
 import axios from "axios";
-import { API } from "../config";
+import API from "../config";
 
 export default function Attendance() {
   const webcamRef = useRef(null);

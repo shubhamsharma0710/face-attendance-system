@@ -4,8 +4,7 @@ useState,
 } from "react";
 
 import axios from "axios";
-import { API } from "../config";
-import { API } from "../config";
+import API from "../config";
 
 export default function Dashboard() {
 const company = JSON.parse(

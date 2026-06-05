@@ -4,7 +4,7 @@ useState,
 } from "react";
 
 import axios from "axios";
-import { API } from "../config";
+import API from "../config";
 
 export default function Companies() {
 const [companies, setCompanies] =
@@ -17,7 +17,7 @@ fetchCompanies();
 const fetchCompanies = async () => {
   try {
     const response = await axios.get(
-      `${API}/api/employees/all`
+      `${API}/api/company/all`
     );
 
     setCompanies(response.data);
@@ -39,7 +39,7 @@ window.confirm(
 
   try {
     await axios.delete(
-      `${API}/api/superadmin/company/${id}`
+      `${API}/api/company/delete/${id}`
     );
 
     alert(
@@ -57,7 +57,7 @@ const disableCompany =
 async (id) => {
 try {
 await axios.put(
-`${API}/api/superadmin/disable/${id}`
+`${API}/api/company/disable/${id}`
 );
 
 
@@ -76,7 +76,7 @@ const enableCompany =
 async (id) => {
 try {
 await axios.put(
-`${API}/api/superadmin/enable/${id}`
+`${API}/api/company/enable/${id}`
 );
 
 
@@ -104,7 +104,7 @@ prompt(
       return;
 
     await axios.put(
-      `${API}/api/superadmin/renew/${id}`,
+      `${API}/api/company/renew/${id}`,
       {
         expiryDate:
           newDate,

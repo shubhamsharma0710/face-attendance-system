@@ -2,7 +2,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { API } from "../config";
+import API from "../config";
 import axios from "axios";
 export default function Employees() {
   const [employees, setEmployees] =

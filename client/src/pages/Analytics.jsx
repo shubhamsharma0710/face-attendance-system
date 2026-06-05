@@ -4,7 +4,7 @@ import React, {
 } from "react";
 
 import axios from "axios";
-import { API } from "../config";
+import API from "../config";
 
 export default function Analytics() {
   const [attendance, setAttendance] =

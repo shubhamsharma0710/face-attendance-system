@@ -1,7 +1,7 @@
 import React, {
 useState,
 } from "react";
-import { API } from "../config";
+import API from "../config";
 import axios from "axios";
 
 export default function SuperAdminLogin({

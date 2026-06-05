@@ -3,7 +3,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { API } from "../config";
+import API from "../config";
 import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
 import axios from "axios";
