@@ -157,9 +157,9 @@ export default function Register() {
 
         const response =
           await axios.post(
-            "${API}/api/employees/register",
-            employee
-          );
+  `${API}/api/employees/register`,
+  data
+);
 
         alert(
           response.data.message

@@ -24,11 +24,11 @@ export default function Analytics() {
       );
 
       const attendanceRes = await axios.get(
-        `${API}/api/attendance/all/${company._id}`
+        `${API}/api/attendance/company/${company._id}`
       );
 
       const employeeRes = await axios.get(
-        `${API}/api/employees/all/${company._id}`
+        `${API}/api/attendance/company/${company._id}`
       );
 
       setAttendance(
