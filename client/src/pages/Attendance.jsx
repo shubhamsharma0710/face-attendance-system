@@ -143,16 +143,6 @@ export default function Attendance() {
         }
       );
 
-      console.log(
-        "Matched Employee:",
-        matchedEmployee
-      );
-
-      console.log(
-        "Face Distance:",
-        minDistance
-      );
-
       if (
         !matchedEmployee ||
         minDistance > 0.5
@@ -172,23 +162,33 @@ export default function Attendance() {
       const minute =
         now.getMinutes();
 
-      let status =
-        "Present";
+      let status = "Absent";
 
+      // 08:00 AM - 10:00 AM
       if (
-        hour < 10 ||
+        (hour > 8 &&
+          hour < 10) ||
+        (hour === 8 &&
+          minute >= 0) ||
         (hour === 10 &&
           minute === 0)
       ) {
         status =
           "Present";
-      } else if (
+      }
+
+      // 10:01 AM - 10:30 AM
+      else if (
         hour === 10 &&
+        minute > 0 &&
         minute <= 30
       ) {
         status =
-          "Late";
-      } else {
+          "Half Day";
+      }
+
+      // After 10:30 AM
+      else {
         status =
           "Absent";
       }
@@ -207,21 +207,11 @@ export default function Attendance() {
             now.toLocaleTimeString(),
         };
 
-      console.log(
-        "Attendance Payload:",
-        attendanceData
-      );
-
       const response =
         await axios.post(
           `${API}/api/attendance/mark`,
           attendanceData
         );
-
-      console.log(
-        "Attendance Saved:",
-        response.data
-      );
 
       alert(
         `${matchedEmployee.employeeName}

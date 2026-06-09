@@ -9,30 +9,23 @@ const Employee = require("../models/Employee");
 // =================================
 router.post("/mark", async (req, res) => {
   try {
-    console.log(
-      "Attendance Request:",
-      req.body
-    );
-
     const {
-  companyId,
-  employeeId,
-  status,
-  checkInTime,
-  checkOutTime,
-} = req.body;
+      companyId,
+      employeeId,
+      status,
+      checkInTime,
+      checkOutTime,
+    } = req.body;
 
-    if (!employeeId) {
+    if (!employeeId || !companyId) {
       return res.status(400).json({
         message:
-          "Employee ID is required",
+          "Company ID and Employee ID are required",
       });
     }
 
     const employee =
-      await Employee.findById(
-        employeeId
-      );
+      await Employee.findById(employeeId);
 
     if (!employee) {
       return res.status(404).json({
@@ -42,16 +35,9 @@ router.post("/mark", async (req, res) => {
     }
 
     const today = new Date();
-    today.setHours(
-      0,
-      0,
-      0,
-      0
-    );
+    today.setHours(0, 0, 0, 0);
 
-    const tomorrow =
-      new Date(today);
-
+    const tomorrow = new Date(today);
     tomorrow.setDate(
       tomorrow.getDate() + 1
     );
@@ -73,24 +59,18 @@ router.post("/mark", async (req, res) => {
     }
 
     const attendance =
-  await Attendance.create({
-    companyId,
-    employeeId,
-    timestamp:
-      new Date(),
-    status:
-      status || "Present",
-    checkInTime:
-      checkInTime ||
-      new Date().toLocaleTimeString(),
-    checkOutTime:
-      checkOutTime || "",
-  });
-
-    console.log(
-      "Attendance Saved:",
-      attendance
-    );
+      await Attendance.create({
+        companyId,
+        employeeId,
+        timestamp: new Date(),
+        status:
+          status || "Present",
+        checkInTime:
+          checkInTime ||
+          new Date().toLocaleTimeString(),
+        checkOutTime:
+          checkOutTime || "",
+      });
 
     res.status(201).json({
       success: true,
@@ -99,10 +79,7 @@ router.post("/mark", async (req, res) => {
       attendance,
     });
   } catch (error) {
-    console.error(
-      "Attendance Save Error:",
-      error
-    );
+    console.error(error);
 
     res.status(500).json({
       message:
@@ -155,10 +132,11 @@ router.post(
 
         if (!alreadyMarked) {
           await Attendance.create({
+            companyId:
+              employee.companyId,
             employeeId:
               employee._id,
-            status:
-              "Absent",
+            status: "Absent",
             timestamp:
               new Date(),
           });
@@ -168,6 +146,7 @@ router.post(
       }
 
       res.json({
+        success: true,
         message:
           "Absent Employees Marked Successfully",
         absentCount,
@@ -200,14 +179,42 @@ router.get("/all", async (req, res) => {
 
     res.json(attendance);
   } catch (error) {
-    console.error(error);
-
     res.status(500).json({
       message:
         error.message,
     });
   }
 });
+
+// =================================
+// GET ATTENDANCE BY COMPANY
+// =================================
+router.get(
+  "/company/:companyId",
+  async (req, res) => {
+    try {
+      const attendance =
+        await Attendance.find({
+          companyId:
+            req.params.companyId,
+        })
+          .populate(
+            "employeeId",
+            "employeeId employeeName"
+          )
+          .sort({
+            timestamp: -1,
+          });
+
+      res.json(attendance);
+    } catch (error) {
+      res.status(500).json({
+        message:
+          error.message,
+      });
+    }
+  }
+);
 
 // =================================
 // MONTHLY REPORT
@@ -259,8 +266,6 @@ router.get(
 
       res.json(attendance);
     } catch (error) {
-      console.error(error);
-
       res.status(500).json({
         message:
           error.message,
@@ -270,12 +275,17 @@ router.get(
 );
 
 // =================================
-// YEARLY REPORT
+// MONTHLY SUMMARY
 // =================================
 router.get(
-  "/yearly/:year",
+  "/monthly-summary/:month/:year",
   async (req, res) => {
     try {
+      const month =
+        parseInt(
+          req.params.month
+        );
+
       const year =
         parseInt(
           req.params.year
@@ -284,38 +294,162 @@ router.get(
       const startDate =
         new Date(
           year,
-          0,
+          month - 1,
           1
         );
 
       const endDate =
         new Date(
-          year + 1,
-          0,
+          year,
+          month,
           1
         );
 
+      const employees =
+        await Employee.find({
+          isDeleted: false,
+        });
+
+      const report = [];
+
+      for (const employee of employees) {
+        const attendance =
+          await Attendance.find({
+            employeeId:
+              employee._id,
+            timestamp: {
+              $gte:
+                startDate,
+              $lt:
+                endDate,
+            },
+          });
+
+        const present =
+          attendance.filter(
+            (a) =>
+              a.status ===
+              "Present"
+          ).length;
+
+        const halfDay =
+          attendance.filter(
+            (a) =>
+              a.status ===
+              "Half-Day"
+          ).length;
+
+        const absent =
+          attendance.filter(
+            (a) =>
+              a.status ===
+              "Absent"
+          ).length;
+
+        report.push({
+          employeeId:
+            employee.employeeId,
+          employeeName:
+            employee.employeeName,
+          present,
+          halfDay,
+          absent,
+        });
+      }
+
+      res.json(report);
+    } catch (error) {
+      res.status(500).json({
+        message:
+          error.message,
+      });
+    }
+  }
+);
+
+// =================================
+// EMPLOYEE MONTHLY SUMMARY
+// =================================
+router.get(
+  "/employee-summary/:employeeId/:month/:year",
+  async (req, res) => {
+    try {
+      const {
+        employeeId,
+        month,
+        year,
+      } = req.params;
+
+      const startDate =
+        new Date(
+          year,
+          month - 1,
+          1
+        );
+
+      const endDate =
+        new Date(
+          year,
+          month,
+          1
+        );
+
+      const employee =
+        await Employee.findById(
+          employeeId
+        );
+
+      if (!employee) {
+        return res.status(404).json({
+          message:
+            "Employee Not Found",
+        });
+      }
+
       const attendance =
         await Attendance.find({
+          employeeId,
           timestamp: {
             $gte:
               startDate,
             $lt:
               endDate,
           },
-        })
-          .populate(
-            "employeeId",
-            "employeeId employeeName"
-          )
-          .sort({
-            timestamp: -1,
-          });
+        });
 
-      res.json(attendance);
+      const present =
+        attendance.filter(
+          (item) =>
+            item.status ===
+            "Present"
+        ).length;
+
+      const halfDay =
+        attendance.filter(
+          (item) =>
+            item.status ===
+            "Half-Day"
+        ).length;
+
+      const absent =
+        attendance.filter(
+          (item) =>
+            item.status ===
+            "Absent"
+        ).length;
+
+      res.json({
+        employeeId:
+          employee.employeeId,
+        employeeName:
+          employee.employeeName,
+        present,
+        halfDay,
+        absent,
+        totalAttendance:
+          attendance.length,
+      });
     } catch (error) {
-      console.error(error);
-
       res.status(500).json({
         message:
           error.message,
@@ -331,25 +465,16 @@ router.delete(
   "/delete/:id",
   async (req, res) => {
     try {
-      const attendance =
-        await Attendance.findByIdAndDelete(
-          req.params.id
-        );
-
-      if (!attendance) {
-        return res.status(404).json({
-          message:
-            "Attendance Record Not Found",
-        });
-      }
+      await Attendance.findByIdAndDelete(
+        req.params.id
+      );
 
       res.json({
+        success: true,
         message:
           "Attendance Deleted Successfully",
       });
     } catch (error) {
-      console.error(error);
-
       res.status(500).json({
         message:
           error.message,
@@ -370,205 +495,11 @@ router.delete(
       );
 
       res.json({
+        success: true,
         message:
           "All Attendance Records Deleted Successfully",
       });
     } catch (error) {
-      console.error(error);
-
-      res.status(500).json({
-        message:
-          error.message,
-      });
-    }
-  }
-);
-
-router.get(
-"/monthly-summary/:month/:year",
-async (req, res) => {
-try {
-const month = parseInt(req.params.month);
-const year = parseInt(req.params.year);
-
-
-  const startDate = new Date(
-    year,
-    month - 1,
-    1
-  );
-
-  const endDate = new Date(
-    year,
-    month,
-    1
-  );
-
-  const employees =
-    await Employee.find({
-      isDeleted: false,
-    });
-
-  const report = [];
-
-  for (const employee of employees) {
-    const attendance =
-      await Attendance.find({
-        employeeId: employee._id,
-        timestamp: {
-          $gte: startDate,
-          $lt: endDate,
-        },
-      });
-
-    const present =
-      attendance.filter(
-        (a) =>
-          a.status === "Present"
-      ).length;
-
-    const late =
-      attendance.filter(
-        (a) =>
-          a.status === "Late"
-      ).length;
-
-    const absent =
-      attendance.filter(
-        (a) =>
-          a.status === "Absent"
-      ).length;
-
-    report.push({
-      employeeId:
-        employee.employeeId,
-      employeeName:
-        employee.employeeName,
-      present,
-      late,
-      absent,
-    });
-  }
-
-  res.json(report);
-} catch (error) {
-  res.status(500).json({
-    message: error.message,
-  });
-}
-
-
-}
-);
-// =================================
-// SINGLE EMPLOYEE MONTHLY REPORT
-// =================================
-router.get(
-  "/employee-summary/:employeeId/:month/:year",
-  async (req, res) => {
-    try {
-      const {
-        employeeId,
-        month,
-        year,
-      } = req.params;
-
-      const startDate = new Date(
-        year,
-        month - 1,
-        1
-      );
-
-      const endDate = new Date(
-        year,
-        month,
-        1
-      );
-
-      const employee =
-        await Employee.findById(
-          employeeId
-        );
-
-      if (!employee) {
-        return res.status(404).json({
-          message:
-            "Employee Not Found",
-        });
-      }
-
-      const attendance =
-        await Attendance.find({
-          employeeId,
-          timestamp: {
-            $gte: startDate,
-            $lt: endDate,
-          },
-        });
-
-      const present =
-        attendance.filter(
-          (item) =>
-            item.status === "Present"
-        ).length;
-
-      const late =
-        attendance.filter(
-          (item) =>
-            item.status === "Late"
-        ).length;
-
-      const absent =
-        attendance.filter(
-          (item) =>
-            item.status === "Absent"
-        ).length;
-
-      res.json({
-        employeeId:
-          employee.employeeId,
-        employeeName:
-          employee.employeeName,
-        present,
-        late,
-        absent,
-        totalAttendance:
-          attendance.length,
-      });
-    } catch (error) {
-      console.error(error);
-
-      res.status(500).json({
-        message:
-          error.message,
-      });
-    }
-  }
-);
-// =================================
-// GET ATTENDANCE BY COMPANY
-// =================================
-router.get(
-  "/company/:companyId",
-  async (req, res) => {
-    try {
-      const attendance =
-        await Attendance.find({
-          companyId:
-            req.params.companyId,
-        })
-          .populate(
-            "employeeId",
-            "employeeId employeeName"
-          )
-          .sort({
-            timestamp: -1,
-          });
-
-      res.json(attendance);
-    } catch (error) {
-      console.error(error);
-
       res.status(500).json({
         message:
           error.message,
