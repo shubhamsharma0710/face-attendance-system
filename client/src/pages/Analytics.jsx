@@ -23,23 +23,32 @@ export default function Analytics() {
         localStorage.getItem("company")
       );
 
-      const attendanceRes = await axios.get(
-        `${API}/api/attendance/company/${company._id}`
-      );
+      if (!company?._id) {
+        alert(
+          "Company not found. Please login again."
+        );
+        return;
+      }
 
-      const employeeRes = await axios.get(
-        `${API}/api/attendance/company/${company._id}`
-      );
+      const attendanceRes =
+        await axios.get(
+          `${API}/api/attendance/company/${company._id}`
+        );
+
+      const employeeRes =
+        await axios.get(
+          `${API}/api/employees/all/${company._id}`
+        );
 
       setAttendance(
-        attendanceRes.data
+        attendanceRes.data || []
       );
 
       setEmployees(
-        employeeRes.data
+        employeeRes.data || []
       );
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -86,9 +95,13 @@ export default function Analytics() {
                 );
 
               return (
-                record.employeeId
-                  ?._id ===
-                  employee._id &&
+                String(
+                  record.employeeId
+                    ?._id
+                ) ===
+                  String(
+                    employee._id
+                  ) &&
                 date.getMonth() ===
                   new Date().getMonth() &&
                 date.getFullYear() ===
@@ -130,7 +143,7 @@ export default function Analytics() {
       </h2>
 
       <p>
-        Present:
+        Present:{" "}
         {
           todayData.filter(
             (a) =>
@@ -141,7 +154,7 @@ export default function Analytics() {
       </p>
 
       <p>
-        Late:
+        Late:{" "}
         {
           todayData.filter(
             (a) =>
@@ -152,7 +165,7 @@ export default function Analytics() {
       </p>
 
       <p>
-        Absent:
+        Absent:{" "}
         {
           todayData.filter(
             (a) =>
@@ -169,7 +182,7 @@ export default function Analytics() {
       </h2>
 
       <p>
-        Present:
+        Present:{" "}
         {
           yesterdayData.filter(
             (a) =>
@@ -180,7 +193,7 @@ export default function Analytics() {
       </p>
 
       <p>
-        Late:
+        Late:{" "}
         {
           yesterdayData.filter(
             (a) =>
@@ -191,7 +204,7 @@ export default function Analytics() {
       </p>
 
       <p>
-        Absent:
+        Absent:{" "}
         {
           yesterdayData.filter(
             (a) =>
@@ -231,31 +244,48 @@ export default function Analytics() {
         </thead>
 
         <tbody>
-          {monthlyReport.map(
-            (
-              employee,
-              index
-            ) => (
-              <tr key={index}>
-                <td>
-                  {
-                    employee.employeeId
-                  }
-                </td>
+          {monthlyReport.length >
+          0 ? (
+            monthlyReport.map(
+              (
+                employee,
+                index
+              ) => (
+                <tr
+                  key={index}
+                >
+                  <td>
+                    {
+                      employee.employeeId
+                    }
+                  </td>
 
-                <td>
-                  {
-                    employee.employeeName
-                  }
-                </td>
+                  <td>
+                    {
+                      employee.employeeName
+                    }
+                  </td>
 
-                <td>
-                  {
-                    employee.totalAttendance
-                  }
-                </td>
-              </tr>
+                  <td>
+                    {
+                      employee.totalAttendance
+                    }
+                  </td>
+                </tr>
+              )
             )
+          ) : (
+            <tr>
+              <td
+                colSpan="3"
+                style={{
+                  textAlign:
+                    "center",
+                }}
+              >
+                No Employee Data
+              </td>
+            </tr>
           )}
         </tbody>
       </table>
@@ -286,31 +316,49 @@ export default function Analytics() {
         </thead>
 
         <tbody>
-          {attendance.map(
-            (
-              record,
-              index
-            ) => (
-              <tr key={index}>
-                <td>
-                  {new Date(
-                    record.timestamp
-                  ).toLocaleDateString()}
-                </td>
+          {attendance.length >
+          0 ? (
+            attendance.map(
+              (
+                record,
+                index
+              ) => (
+                <tr
+                  key={index}
+                >
+                  <td>
+                    {new Date(
+                      record.timestamp
+                    ).toLocaleDateString()}
+                  </td>
 
-                <td>
-                  {
-                    record
+                  <td>
+                    {record
                       .employeeId
-                      ?.employeeName
-                  }
-                </td>
+                      ?.employeeName ||
+                      "N/A"}
+                  </td>
 
-                <td>
-                  {record.status}
-                </td>
-              </tr>
+                  <td>
+                    {
+                      record.status
+                    }
+                  </td>
+                </tr>
+              )
             )
+          ) : (
+            <tr>
+              <td
+                colSpan="3"
+                style={{
+                  textAlign:
+                    "center",
+                }}
+              >
+                No Attendance Data
+              </td>
+            </tr>
           )}
         </tbody>
       </table>
