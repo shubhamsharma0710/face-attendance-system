@@ -24,15 +24,15 @@ export default function Attendance() {
       const MODEL_URL = "/models";
 
       await faceapi.nets.tinyFaceDetector.loadFromUri(
-        MODEL_URL + "/tiny_face_detector"
+        `${MODEL_URL}/tiny_face_detector`
       );
 
       await faceapi.nets.faceLandmark68Net.loadFromUri(
-        MODEL_URL + "/face_landmark_68"
+        `${MODEL_URL}/face_landmark_68`
       );
 
       await faceapi.nets.faceRecognitionNet.loadFromUri(
-        MODEL_URL + "/face_recognition"
+        `${MODEL_URL}/face_recognition`
       );
 
       setModelsLoaded(true);
@@ -50,9 +50,20 @@ export default function Attendance() {
 
   const markAttendance = async () => {
     try {
+      const company = JSON.parse(
+        localStorage.getItem("company")
+      );
+
+      if (!company?._id) {
+        alert(
+          "Company not found. Please login again."
+        );
+        return;
+      }
+
       const employeeRes =
         await axios.get(
-          `${API}/api/employees/all`
+          `${API}/api/employees/all/${company._id}`
         );
 
       const employees =
@@ -86,8 +97,7 @@ export default function Attendance() {
             new faceapi.TinyFaceDetectorOptions(
               {
                 inputSize: 416,
-                scoreThreshold:
-                  0.1,
+                scoreThreshold: 0.1,
               }
             )
           )
@@ -185,9 +195,14 @@ export default function Attendance() {
 
       const attendanceData =
         {
+          companyId:
+            company._id,
+
           employeeId:
             matchedEmployee._id,
+
           status,
+
           checkInTime:
             now.toLocaleTimeString(),
         };
