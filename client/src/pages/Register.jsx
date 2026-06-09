@@ -157,12 +157,13 @@ export default function Register() {
 
         const response =
           await axios.post(
-  `${API}/api/employees/register`,
-  data
-);
+            `${API}/api/employees/register`,
+            employee
+          );
 
         alert(
-          response.data.message
+          response.data.message ||
+            "Employee Registered Successfully"
         );
 
         setEmployeeId("");
