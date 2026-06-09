@@ -27,10 +27,10 @@ export default function CreateCompany() {
     try {
       setLoading(true);
 
-      await axios.post(
-  `${API}/api/company/create`,
-  formData
-);
+      const response = await axios.post(
+        `${API}/api/company/create`,
+        formData
+      );
 
       alert(
         response.data.message ||
@@ -146,26 +146,13 @@ export default function CreateCompany() {
             marginBottom: "10px",
           }}
         >
-          <option value="Monthly">
-            Monthly
-          </option>
-
-          <option value="Quarterly">
-            Quarterly
-          </option>
-
-          <option value="Half-Yearly">
-            Half-Yearly
-          </option>
-
-          <option value="Yearly">
-            Yearly
-          </option>
+          <option value="Monthly">Monthly</option>
+          <option value="Quarterly">Quarterly</option>
+          <option value="Half-Yearly">Half-Yearly</option>
+          <option value="Yearly">Yearly</option>
         </select>
 
-        <label>
-          Expiry Date
-        </label>
+        <label>Expiry Date</label>
 
         <input
           type="date"

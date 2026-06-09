@@ -67,7 +67,7 @@ router.get("/dashboard", async (req, res) => {
     const activeCompanies =
       await Company.countDocuments({
         isActive: true,
-      });
+      });  
 
     const expiredCompanies =
       await Company.countDocuments({
